@@ -38,18 +38,22 @@ def convert_attr(attributes):
 
 
 @functools.lru_cache(maxsize=3000000)
-def single(document, model="en", embeddings_path=None, attributes=None):
+def single(document, model="en", embeddings_path=None, attributes=None, local=False):
     attributes = convert_attr(attributes)
     nlp_ = get_nlp(model, embeddings_path)
-    sentences = []
-    for sent in nlp_(document).sents:
-        sentence = [{x: json_safety(token, x) for x in attributes}
-                    for token in sent]
-        sentences.append(sentence)
-    return {"sentences": sentences}
+    if local:
+        sentences = nlp_(document)
+    else:
+        sentences = []
+        for sent in nlp_(document).sents:
+            sentence = [{x: json_safety(token, x) for x in attributes}
+                        for token in sent]
+            sentences.append(sentence)
+    return sentences
 
 
-def bulk(documents, model="en", embeddings_path=None, attributes=None):
+def bulk(documents, model="en", embeddings_path=None, attributes=None, local=False):
     attributes = convert_attr(attributes)
-    parsed_documents = [single(d, model, embeddings_path, attributes) for d in documents]
-    return {"documents": parsed_documents}
+    parsed_documents = [single(d, model, embeddings_path, attributes, local)
+                        for d in documents]
+    return parsed_documents

@@ -16,11 +16,11 @@ class SpacyServer(RPCServer):
 class SpacyLocalServer():
 
     def single(self, document, model="en", embeddings_path=None, attributes=None):
-        return single(document, model, embeddings_path, attributes)
+        return single(document, model, embeddings_path, attributes, local=True)
 
     def bulk(self, documents, model="en", embeddings_path=None, attributes=None):
         documents = tuple(documents)
-        return bulk(documents, model, embeddings_path, attributes)
+        return bulk(documents, model, embeddings_path, attributes, local=True)
 
 
 def serve(host="127.0.0.1", port=9033):

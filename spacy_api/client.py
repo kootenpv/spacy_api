@@ -76,7 +76,7 @@ class Connector():
 
     @functools.lru_cache(maxsize=3000000)
     def single(self, document, model="en", embeddings_path=None, attributes=None):
-        sentences = self._call("single", document, model, embeddings_path, attributes)["sentences"]
+        sentences = self._call("single", document, model, embeddings_path, attributes)
         return SpacyClientDocument(sentences)
 
     def _bulk(self, documents, model, embeddings_path, attributes):
@@ -89,9 +89,8 @@ class Connector():
             print("Batching {} requests with batch_size {}".format(batches, batch_size))
             for b in tqdm.tqdm(range(batches)):
                 docs = documents[b * batch_size:(b + 1) * batch_size]
-                res = self._bulk(docs, model, embeddings_path, attributes)["documents"]
+                res = self._bulk(docs, model, embeddings_path, attributes)
                 parsed_documents.extend(res)
         else:
             parsed_documents = self._bulk(documents, model, embeddings_path, attributes)
-            parsed_documents = parsed_documents["documents"]
-        return [SpacyClientDocument(x["sentences"]) for x in parsed_documents]
+        return [SpacyClientDocument(x) for x in parsed_documents]
