@@ -29,10 +29,17 @@ def json_safety(token, x):
         return [float(x) for x in value]
 
 
-@functools.lru_cache(maxsize=3000000)
-def single(document, model="en", embeddings_path=None, attributes=None):
+def convert_attr(attributes):
     if attributes is None:
         attributes = DEFAULT_ATTRIBUTES
+    elif isinstance(attributes, str):
+        attributes = tuple(attributes.split(","))
+    return attributes
+
+
+@functools.lru_cache(maxsize=3000000)
+def single(document, model="en", embeddings_path=None, attributes=None):
+    attributes = convert_attr(attributes)
     nlp_ = get_nlp(model, embeddings_path)
     sentences = []
     for sent in nlp_(document).sents:
@@ -43,7 +50,6 @@ def single(document, model="en", embeddings_path=None, attributes=None):
 
 
 def bulk(documents, model="en", embeddings_path=None, attributes=None):
-    if attributes is None:
-        attributes = DEFAULT_ATTRIBUTES
+    attributes = convert_attr(attributes)
     parsed_documents = [single(d, model, embeddings_path, attributes) for d in documents]
     return {"documents": parsed_documents}

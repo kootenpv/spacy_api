@@ -7,10 +7,8 @@ Caching happens on unique arguments.
 #### Features
 
 - ✓ Serve models separately
-- ✓ Client and Server caching
+- ✓ Client- and Server-side caching
 - ✓ CLI interface
-- ✓ HTML preview at /single
-- ✓ HTML visualizing Dependency Tree
 
 ### Install
 
@@ -20,11 +18,11 @@ Install on a machine that will run both client and server:
 
     pip install spacy_api[all]
 
-Server only (spacy, flask):
+Server only (spacy, mprpc):
 
     pip install spacy_api[server]
 
-Client Only (requests, numpy):
+Client Only (numpy, mprpc):
 
     pip install spacy_api[client]
 

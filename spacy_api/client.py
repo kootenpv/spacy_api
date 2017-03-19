@@ -2,7 +2,7 @@ import tqdm
 import math
 import numpy as np
 import functools
-import requests
+from mprpc import RPCClient
 
 
 class SpacyClientToken():
@@ -66,24 +66,21 @@ class SpacyClientDocument(list):
 
 class Connector():
 
-    def __init__(self, host="http://localhost", port=9033):
+    def __init__(self, host="127.0.0.1", port=9033):
         self.host = host
         self.port = port
-        self.url = "{}:{}/".format(host, port)
+        self.rpc = RPCClient(host, port)
 
-    def _post(self, path, **kwargs):
-        resp = requests.post(self.url + path, json=kwargs)
-        return resp.json()
+    def _call(self, path, *args):
+        return self.rpc.call(path, *args)
 
     @functools.lru_cache(maxsize=3000000)
     def single(self, document, model="en", embeddings_path=None, attributes=None):
-        sentences = self._post("single", document=document, model=model,
-                               embeddings_path=embeddings_path, attributes=attributes)["sentences"]
+        sentences = self._call("single", document, model, embeddings_path, attributes)["sentences"]
         return SpacyClientDocument(sentences)
 
     def _bulk(self, documents, model, embeddings_path, attributes):
-        return self._post("bulk", documents=documents, model=model,
-                          embeddings_path=embeddings_path, attributes=attributes)
+        return self._call("bulk", documents, model, embeddings_path, attributes)
 
     def bulk(self, documents, model="en", batch_size=1000, embeddings_path=None, attributes=None):
         parsed_documents = []
@@ -97,4 +94,4 @@ class Connector():
         else:
             parsed_documents = self._bulk(documents, model, embeddings_path, attributes)
             parsed_documents = parsed_documents["documents"]
-        return parsed_documents
+        return [SpacyClientDocument(x["sentences"]) for x in parsed_documents]

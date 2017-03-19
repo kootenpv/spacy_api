@@ -3,7 +3,7 @@ from setuptools import setup
 
 MAJOR_VERSION = '0'
 MINOR_VERSION = '0'
-MICRO_VERSION = '14'
+MICRO_VERSION = '15'
 VERSION = "{}.{}.{}".format(MAJOR_VERSION, MINOR_VERSION, MICRO_VERSION)
 
 setup(name='spacy_api',
@@ -34,9 +34,9 @@ setup(name='spacy_api',
           'Topic :: Scientific/Engineering'
       ],
       extras_require={
-          'server': ['spacy', 'flask'],
-          'client': ['requests', 'numpy'],
-          'all': ['requests', 'flask', 'spacy', 'numpy']
+          'server': ['spacy', 'mprpc'],
+          'client': ['mprpc', 'numpy'],
+          'all': ['mprpc', 'spacy', 'numpy']
       },
       license='MIT',
       packages=find_packages(),
