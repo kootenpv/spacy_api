@@ -27,6 +27,7 @@ def json_safety(token, x):
     if isinstance(value, (str, int)):
         return value
     else:
+        # vectors
         return [float(x) for x in value]
 
 

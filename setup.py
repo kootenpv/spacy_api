@@ -3,7 +3,7 @@ from setuptools import setup
 
 MAJOR_VERSION = '0'
 MINOR_VERSION = '0'
-MICRO_VERSION = '6'
+MICRO_VERSION = '7'
 VERSION = "{}.{}.{}".format(MAJOR_VERSION, MINOR_VERSION, MICRO_VERSION)
 
 setup(name='spacy_api',
@@ -13,7 +13,7 @@ setup(name='spacy_api',
       url='https://github.com/kootenpv/spacy_api',
       author_email='kootenpv@gmail.com',
       install_requires=[
-          'requests', 'flask', 'spacy'
+          'requests', 'flask', 'spacy', 'numpy'
       ],
       entry_points={
           'console_scripts': ['spacy = spacy_api.__main__:main']

@@ -1,3 +1,4 @@
+import numpy as np
 import functools
 import requests
 
@@ -8,6 +9,12 @@ class SpacyClientToken():
         self.attributes = kwargs
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    @property
+    def _vector(self):
+        if isinstance(self.vector, list):
+            self.vector = np.array(self.vector)
+        return self.vector
 
     def __repr__(self):
         if "text" in self.attributes:
@@ -21,6 +28,13 @@ class SpacyClientSentence(list):
     def __init__(self, tokens):
         self.tokens = [SpacyClientToken(**token) for token in tokens]
         super(SpacyClientSentence, self).__init__(self.tokens)
+        self._vector = None
+
+    @property
+    def vector(self):
+        if self._vector is None:
+            self._vector = np.mean([x._vector for x in self.tokens], axis=0)
+        return self._vector
 
     def __getitem__(self, i):
         return self.tokens[0]
@@ -31,6 +45,13 @@ class SpacyClientDocument(list):
     def __init__(self, document):
         self.sents = [SpacyClientSentence(x) for x in document]
         super(SpacyClientDocument, self).__init__(self.sents)
+        self._vector = None
+
+    @property
+    def vector(self):
+        if self._vector is None:
+            self._vector = np.mean([x.vector for x in self.sents], axis=0)
+        return self._vector
 
     def __getitem__(self, i):
         return self.sents[0]
