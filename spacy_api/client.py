@@ -95,5 +95,6 @@ class Connector():
                 res = self._bulk(docs, model, embeddings_path, attributes)["documents"]
                 parsed_documents.extend(res)
         else:
-            parsed_documents = self._bulk(docs, model, embeddings_path, attributes)["documents"]
+            parsed_documents = self._bulk(documents, model, embeddings_path, attributes)
+            parsed_documents = parsed_documents["documents"]
         return parsed_documents
