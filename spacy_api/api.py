@@ -19,7 +19,11 @@ def get_nlp(model="en", embeddings_path=None):
 
 
 def json_safety(token, x):
-    value = getattr(token, x)
+    try:
+        value = getattr(token, x)
+    except AttributeError:
+        print(x, "not found on spacy object")
+        value = "ERROR"
     if isinstance(value, (str, int)):
         return value
     else:
