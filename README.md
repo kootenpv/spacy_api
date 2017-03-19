@@ -14,8 +14,19 @@ Caching happens on unique arguments.
 
 ### Install
 
-    pip install spacy_api
-    pip3 install spacy_api
+Should work with py2 and py3.
+
+Install on a machine that will run both client and server:
+
+    pip install spacy_api[all]
+
+Server only (spacy, flask):
+
+    pip install spacy_api[server]
+
+Client Only (requests, numpy):
+
+    pip install spacy_api[client]
 
 ### Example
 
