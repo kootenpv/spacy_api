@@ -1,5 +1,4 @@
 from spacy_api.server import serve
-from spacy_api.fserver import fserve
 from spacy_api import print_version
 
 
@@ -25,8 +24,6 @@ def main():
     args = parser.parse_args()
     if args.command == "serve":
         serve(args.host, args.port)
-    elif args.command == "fserve":
-        fserve(args.host, args.port)
     else:
         parser.print_help()
         parser.exit(1)
