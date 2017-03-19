@@ -18,23 +18,28 @@ html = """
 <html>
     <body style="margin: 0px">
         <div>
-            <div style="margin-left: 15%; margin-right: 15%">
-                <p><h3>Chat:</h3></p>
+                <div style="margin-left: 15%; margin-right: 15%; margin-top:3%">
+                <h2>spacy_api</h2>
+                <hr>
+                <p><h3>Parse:</h3></p>
                 <form action="/single" method="get">
                     <p>Input: <input type="text" name="document" value="{document}" style=" width: 50%; border-radius: 4px; box-shadow: silver 3px 3px 2px; padding: 3px;" /></p>
                     <p>Attributes: <input type="text" name="attributes" value="{attributes}" /></p>
+                    <input type="hidden" name="results_single" value="{results_single}">
                     <input type="submit" value="Submit" style="margin-top: 10px;">
                 </form>
 
-                <p>Result: <code style='white-space: pre-wrap;'>{results}</code></p>
+                <p>Result: <code style='white-space: pre-wrap;'>{results_single}</code></p>
 
                 <p><h3>View dependency tree</h3></p>
                 <form action="/view_tree" method="get">
                     <p>Input: <input type="text" name="document" value="{document}" style=" width: 50%; border-radius: 4px; box-shadow: silver 3px 3px 2px; padding: 3px;" /></p>
                     <p>Attributes: <input type="text" name="attributes" value="{attributes}" /></p>
+                    <input type="hidden" name="results_tree" value="{results_tree}">
                     <input type="submit" value="Submit" style="margin-top: 10px;">
                 </form>
 
+                <p>Result: <code style='white-space: pre-wrap;'>{results_tree}</code></p>
             </div>
         </div>
     </body>
@@ -61,8 +66,11 @@ def enrich():
 def view_tree():
     args = get_args()
     document = args.get("document", "")
-    attributes = args.get("attributes", ["text,lemma_,pos_,tag_"])[0]
-    return html.format(document=document, attributes=attributes, results=repr_tree(document, get_nlp()))
+    attributes = args.get("attributes", None)
+    results_single = args.get("results_single", "")
+    if attributes is None:
+        attributes = "text,lemma_,pos_,tag_"
+    return html.format(document=document, attributes=attributes, results_single=results_single, results_tree=repr_tree(document, get_nlp()))
 
 
 @app.route("/", methods=["GET", "POST", "OPTIONS"])
@@ -76,12 +84,14 @@ def root():
 def single_route():
     args = get_args()
     document = args.get("document", "")
-    attributes = "text"
-    #attributes = args.get("attributes", ["text,lemma_,pos_,tag_"])[0]
+    attributes = args.get("attributes", None)
+    if attributes is None:
+        attributes = "text,lemma_,pos_,tag_"
     atts = tuple(attributes.split(","))
     if request.method == "GET":
+        results_tree = args.get("results_tree", "")
         results = single(document, attributes=atts) if document else "no document was given"
-        return html.format(document=document, attributes=attributes, results=json.dumps(results, indent=4))
+        return html.format(document=document, attributes=attributes, results_tree=results_tree, results_single=json.dumps(results, indent=4))
     elif request.method == "POST":
         model = args.get("model", "en")
         embeddings_path = args.get("embeddings_path", None)
