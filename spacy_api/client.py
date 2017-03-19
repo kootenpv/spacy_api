@@ -93,5 +93,5 @@ class Connector():
                 parsed_documents.extend(res)
         else:
             parsed_documents = [self.single(d, model, embeddings_path, attributes)
-                                for d in docs]
+                                for d in documents]
         return parsed_documents
