@@ -39,8 +39,7 @@ def single(document, model="en", embeddings_path=None, attributes=None):
     return {"sentences": sentences}
 
 
-@functools.lru_cache(maxsize=10000)
-def _bulk(documents, model, batch_size, embeddings_path, attributes):
+def bulk(documents, model="en", batch_size=1000, embeddings_path=None, attributes=None):
     if attributes is None:
         attributes = DEFAULT_ATTRIBUTES
     if len(documents) > batch_size:
@@ -53,8 +52,3 @@ def _bulk(documents, model, batch_size, embeddings_path, attributes):
     else:
         parsed_documents = [single(d, model, embeddings_path, attributes) for d in documents]
     return {"documents": parsed_documents}
-
-
-def bulk(documents, model="en", batch_size=1000, embeddings_path=None, attributes=None):
-    documents = tuple(documents)
-    return _bulk(documents, model, batch_size, embeddings_path, attributes)
