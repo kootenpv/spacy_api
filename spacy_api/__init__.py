@@ -1,7 +1,7 @@
 import sys
 
 __project__ = "spacy_api"
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 __repo__ = "https://github.com/kootenpv/spacy_api"
 
 

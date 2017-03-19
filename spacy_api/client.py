@@ -1,3 +1,5 @@
+import tqdm
+import math
 import numpy as np
 import functools
 import requests
@@ -79,12 +81,17 @@ class Connector():
                                embeddings_path=embeddings_path, attributes=attributes)["sentences"]
         return SpacyClientDocument(sentences)
 
-    @functools.lru_cache(maxsize=10000)
-    def _bulk(self, documents, model, batch_size, embeddings_path, attributes):
-        return self._post("bulk", documents=documents, model=model, batch_size=batch_size,
-                          embeddings_path=embeddings_path, attributes=attributes)
-
     def bulk(self, documents, model="en", batch_size=1000, embeddings_path=None, attributes=None):
-        data = self._bulk(tuple(documents), model, batch_size, embeddings_path, attributes)
-        documents = data["documents"]
-        return [SpacyClientDocument(document["sentences"]) for document in documents]
+        parsed_documents = []
+        if len(documents) > batch_size:
+            batches = int(math.ceil(len(documents) / batch_size))
+            print("Batching {} requests with batch_size {}".format(batches, batch_size))
+            for b in tqdm.tqdm(range(batches)):
+                docs = documents[b * batch_size:(b + 1) * batch_size]
+                res = [self.single(d, model, embeddings_path, attributes)
+                       for d in docs]
+                parsed_documents.extend(res)
+        else:
+            parsed_documents = [self.single(d, model, embeddings_path, attributes)
+                                for d in docs]
+        return parsed_documents

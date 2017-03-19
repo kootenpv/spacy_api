@@ -106,13 +106,12 @@ def bulk_route():
     attributes = args.get("attributes", None)
     if attributes is None:
         attributes = "text,lemma_,pos_,tag_"
-    batch_size = int(args.get("batch_size", 1000))
     atts = tuple(attributes.split(","))
     model = args.get("model", "en")
     embeddings_path = args.get("embeddings_path", None)
 
-    parsed_docs = bulk(documents, attributes=atts, batch_size=batch_size,
-                       embeddings_path=embeddings_path, model=model)
+    parsed_docs = bulk(documents, attributes=atts,  model=model,
+                       embeddings_path=embeddings_path)
     return jsonify(parsed_docs)
 
 

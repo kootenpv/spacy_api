@@ -1,5 +1,3 @@
-import math
-import tqdm
 import functools
 import spacy
 
@@ -44,16 +42,8 @@ def single(document, model="en", embeddings_path=None, attributes=None):
     return {"sentences": sentences}
 
 
-def bulk(documents, model="en", batch_size=1000, embeddings_path=None, attributes=None):
+def bulk(documents, model="en", embeddings_path=None, attributes=None):
     if attributes is None:
         attributes = DEFAULT_ATTRIBUTES
-    if len(documents) > batch_size:
-        parsed_documents = []
-        batches = int(math.ceil(len(documents) / batch_size))
-        for b in tqdm.tqdm(range(batches)):
-            docs = documents[b * batch_size:(b + 1) * batch_size]
-            res = [single(d, model, embeddings_path, attributes) for d in docs]
-            parsed_documents.extend(res)
-    else:
-        parsed_documents = [single(d, model, embeddings_path, attributes) for d in documents]
+    parsed_documents = [single(d, model, embeddings_path, attributes) for d in documents]
     return {"documents": parsed_documents}
