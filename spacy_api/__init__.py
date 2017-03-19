@@ -1,8 +1,11 @@
 import sys
 
 __project__ = "spacy_api"
-__version__ = "0.0.17"
+__version__ = "0.2.18"
 __repo__ = "https://github.com/kootenpv/spacy_api"
+
+from spacy_api.client import Connector
+from spacy_api.server import SpacyLocalServer as LocalConnector
 
 
 def print_version():

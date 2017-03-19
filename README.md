@@ -37,7 +37,7 @@ Then open a python process and run code in the next section.
 #### Single document
 
 ```python
-from spacy_api.client import Connector
+from spacy_api import Connector
 
 spacy_client = Connector() # default args host/port
 
@@ -54,6 +54,16 @@ for sentence in doc.sents:
 for token in doc:
     print(token)
 ```
+
+#### Switch to running spacy within the process
+
+Instead of
+
+    from spacy_api import Connector
+
+use
+
+    from spacy_api import LocalConnector
 
 #### Arguments
 

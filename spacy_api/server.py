@@ -13,6 +13,16 @@ class SpacyServer(RPCServer):
         return bulk(documents, model, embeddings_path, attributes)
 
 
+class SpacyLocalServer():
+
+    def single(self, document, model="en", embeddings_path=None, attributes=None):
+        return single(document, model, embeddings_path, attributes)
+
+    def bulk(self, documents, model="en", embeddings_path=None, attributes=None):
+        documents = tuple(documents)
+        return bulk(documents, model, embeddings_path, attributes)
+
+
 def serve(host="127.0.0.1", port=9033):
     print("Serving spacy_api at {}:{}".format(host, port))
     server = StreamServer((host, int(port)), SpacyServer())
