@@ -20,7 +20,7 @@ html = """
         <div>
             <div style="margin-left: 15%; margin-right: 15%">
                 <p><h3>Chat:</h3></p>
-                <form action="/" method="get">
+                <form action="/single" method="get">
                     <p>Input: <input type="text" name="document" value="{document}" style=" width: 50%; border-radius: 4px; box-shadow: silver 3px 3px 2px; padding: 3px;" /></p>
                     <p>Attributes: <input type="text" name="attributes" value="{attributes}" /></p>
                     <input type="submit" value="Submit" style="margin-top: 10px;">
