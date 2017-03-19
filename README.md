@@ -12,6 +12,11 @@ Caching happens on unique arguments.
 - ✓ HTML preview at /single
 - ✓ HTML visualizing Dependency Tree
 
+### Install
+
+    pip install spacy_api
+    pip3 install spacy_api
+
 ### Example
 
 Run the server:
