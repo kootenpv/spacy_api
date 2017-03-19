@@ -14,6 +14,7 @@ class SpacyServer(RPCServer):
 
 
 def serve(host="127.0.0.1", port=9033):
+    print("Serving spacy_api at {}:{}".format(host, port))
     server = StreamServer((host, int(port)), SpacyServer())
     server.serve_forever()
 
