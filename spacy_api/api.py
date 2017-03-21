@@ -1,4 +1,4 @@
-import functools
+import cachetools
 import spacy
 
 nlp_objects = {}
@@ -37,7 +37,7 @@ def convert_attr(attributes):
     return attributes
 
 
-@functools.lru_cache(maxsize=3000000)
+@cachetools.cached(cachetools.LRUCache(maxsize=3000000))
 def single(document, model="en", embeddings_path=None, attributes=None, local=False):
     attributes = convert_attr(attributes)
     nlp_ = get_nlp(model, embeddings_path)

@@ -1,4 +1,4 @@
-from spacy_api.client import Connector
+from spacy_api import Connector
 
 
 def test_single():

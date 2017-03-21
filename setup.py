@@ -3,7 +3,7 @@ from setuptools import setup
 
 MAJOR_VERSION = '0'
 MINOR_VERSION = '3'
-MICRO_VERSION = '20'
+MICRO_VERSION = '22'
 VERSION = "{}.{}.{}".format(MAJOR_VERSION, MINOR_VERSION, MICRO_VERSION)
 
 setup(name='spacy_api',
@@ -15,6 +15,9 @@ setup(name='spacy_api',
       entry_points={
           'console_scripts': ['spacy = spacy_api.__main__:main']
       },
+      install_requires=[
+          'cachetools'
+      ],
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Console',

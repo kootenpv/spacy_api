@@ -1,5 +1,5 @@
 import tqdm
-import functools
+import cachetools
 import math
 import numpy as np
 from mprpc import RPCClient
@@ -80,7 +80,7 @@ class Connector():
     def _call(self, path, *args):
         return self.rpc.call(path, *args)
 
-    @functools.lru_cache(maxsize=3000000)
+    @cachetools.cached(cachetools.LRUCache(maxsize=3000000))
     def single(self, document, model="en", embeddings_path=None, attributes=None):
         sentences = self._call("single", document, model, embeddings_path, attributes)
         return SpacyClientDocument(sentences)
