@@ -1,7 +1,7 @@
 import tqdm
+import functools
 import math
 import numpy as np
-import functools
 from mprpc import RPCClient
 
 
@@ -46,6 +46,7 @@ class SpacyClientDocument(list):
 
     def __init__(self, document):
         self.sents = [SpacyClientSentence(x) for x in document]
+        self._iter = []
         super(SpacyClientDocument, self).__init__(self.sents)
         self._vector = None
 
@@ -56,7 +57,11 @@ class SpacyClientDocument(list):
         return self._vector
 
     def __getitem__(self, i):
-        return self.sents[0]
+        if not self._iter:
+            for sentence in self.sents:
+                for token in sentence:
+                    self._iter.append(token)
+        return self._iter[i]
 
     def __iter__(self):
         for sentence in self.sents:
@@ -66,10 +71,11 @@ class SpacyClientDocument(list):
 
 class Connector():
 
-    def __init__(self, host="127.0.0.1", port=9033):
+    def __init__(self, host="127.0.0.1", port=9033, verbose=False):
         self.host = host
         self.port = port
         self.rpc = RPCClient(host, port)
+        self.verbose = verbose
 
     def _call(self, path, *args):
         return self.rpc.call(path, *args)
@@ -87,7 +93,11 @@ class Connector():
         if len(documents) > batch_size:
             batches = int(math.ceil(len(documents) / batch_size))
             print("Batching {} requests with batch_size {}".format(batches, batch_size))
-            for b in tqdm.tqdm(range(batches)):
+            if self.verbose:
+                batch_iterator = tqdm.tqdm(range(batches))
+            else:
+                batch_iterator = range(batches)
+            for b in batch_iterator:
                 docs = documents[b * batch_size:(b + 1) * batch_size]
                 res = self._bulk(docs, model, embeddings_path, attributes)
                 parsed_documents.extend(res)
