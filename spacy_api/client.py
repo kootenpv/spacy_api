@@ -11,12 +11,8 @@ class SpacyClientToken():
         self.attributes = kwargs
         for k, v in kwargs.items():
             setattr(self, k, v)
-
-    @property
-    def _vector(self):
-        if isinstance(self.vector, list):
+        if "vector" in self.attributes:
             self.vector = np.array(self.vector)
-        return self.vector
 
     def __repr__(self):
         if "text" in self.attributes:
@@ -35,7 +31,7 @@ class SpacyClientSentence(list):
     @property
     def vector(self):
         if self._vector is None:
-            self._vector = np.mean([x._vector for x in self.tokens], axis=0)
+            self._vector = np.mean([x.vector for x in self.tokens], axis=0)
         return self._vector
 
     def __getitem__(self, i):
