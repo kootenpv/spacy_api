@@ -1,6 +1,7 @@
 from gevent.server import StreamServer
 from mprpc import RPCServer
 from spacy_api.api import single, bulk
+from spacy_api.client import BaseClient
 
 
 class SpacyServer(RPCServer):
@@ -13,7 +14,7 @@ class SpacyServer(RPCServer):
         return bulk(documents, model, embeddings_path, attributes)
 
 
-class SpacyLocalServer():
+class SpacyLocalServer(BaseClient):
 
     def single(self, document, model="en", embeddings_path=None, attributes=None):
         return single(document, model, embeddings_path, attributes, local=True)

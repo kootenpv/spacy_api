@@ -69,7 +69,21 @@ class SpacyClientDocument(list):
                 yield token
 
 
-class Client():
+class BaseClient():
+
+    def __init__(self, host, port, verbose):
+        self.host = host
+        self.port = port
+        self.verbose = verbose
+
+    def single(self, document, model, embeddings_path, attributes):
+        raise NotImplementedError
+
+    def bulk(self, documents, model, embeddings_path, attributes):
+        raise NotImplementedError
+
+
+class Client(BaseClient):
 
     def __init__(self, host="127.0.0.1", port=9033, verbose=False):
         self.host = host
