@@ -37,9 +37,9 @@ Then open a python process and run code in the next section.
 #### Single document
 
 ```python
-from spacy_api import Connector
+from spacy_api import Client
 
-spacy_client = Connector() # default args host/port
+spacy_client = Client() # default args host/port
 
 doc = spacy_client.single("How are you")
 doc
@@ -59,11 +59,11 @@ for token in doc:
 
 Instead of
 
-    from spacy_api import Connector
+    from spacy_api import Client
 
 use
 
-    from spacy_api import LocalConnector
+    from spacy_api import LocalClient
 
 #### Arguments
 

@@ -69,7 +69,7 @@ class SpacyClientDocument(list):
                 yield token
 
 
-class Connector():
+class Client():
 
     def __init__(self, host="127.0.0.1", port=9033, verbose=False):
         self.host = host
