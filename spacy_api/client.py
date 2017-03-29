@@ -34,6 +34,10 @@ class SpacyClientSentence(list):
             self._vector = np.mean([x.vector for x in self.tokens], axis=0)
         return self._vector
 
+    @property
+    def string(self):
+        return "".join([x.string for x in self.tokens])
+
     def __getitem__(self, i):
         return self.tokens[0]
 
@@ -43,6 +47,7 @@ class SpacyClientDocument(list):
     def __init__(self, document):
         self.sents = [SpacyClientSentence(x) for x in document]
         self._iter = []
+        self.string = document
         super(SpacyClientDocument, self).__init__(self.sents)
         self._vector = None
 
