@@ -67,20 +67,23 @@ class SpacyClientDocument(list):
 
 class BaseClient():
 
-    def single(self, document, model, embeddings_path, attributes):
+    def __init__(self, model, embeddings_path):
+        self.model = model
+        self.embeddings_path = embeddings_path
+
+    def single(self, document, attributes):
         raise NotImplementedError
 
-    def bulk(self, documents, model, embeddings_path, attributes):
+    def bulk(self, documents, attributes):
         raise NotImplementedError
 
 
 class Client(BaseClient):
 
     def __init__(self, host="127.0.0.1", port=9033, model="en", embeddings_path=None, verbose=False):
+        super(Client, self).__init__(model, embeddings_path)
         self.host = host
         self.port = port
-        self.model = model
-        self.embeddings_path = embeddings_path
         self.rpc = RPCClient(host, port)
         self.verbose = verbose
 
