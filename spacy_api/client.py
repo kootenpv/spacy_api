@@ -76,9 +76,11 @@ class BaseClient():
 
 class Client(BaseClient):
 
-    def __init__(self, host="127.0.0.1", port=9033, verbose=False):
+    def __init__(self, host="127.0.0.1", port=9033, model="en", embeddings_path=None, verbose=False):
         self.host = host
         self.port = port
+        self.model = model
+        self.embeddings_path = embeddings_path
         self.rpc = RPCClient(host, port)
         self.verbose = verbose
 
@@ -86,14 +88,14 @@ class Client(BaseClient):
         return self.rpc.call(path, *args)
 
     @cachetools.func.lru_cache(maxsize=3000000)
-    def single(self, document, model="en", embeddings_path=None, attributes=None):
-        sentences = self._call("single", document, model, embeddings_path, attributes)
+    def single(self, document, attributes=None):
+        sentences = self._call("single", document, self.model, self.embeddings_path, attributes)
         return SpacyClientDocument(sentences)
 
-    def _bulk(self, documents, model, embeddings_path, attributes):
-        return self._call("bulk", documents, model, embeddings_path, attributes)
+    def _bulk(self, documents, attributes):
+        return self._call("bulk", documents, self.model, self.embeddings_path, attributes)
 
-    def bulk(self, documents, model="en", batch_size=1000, embeddings_path=None, attributes=None):
+    def bulk(self, documents, batch_size=1000, attributes=None):
         parsed_documents = []
         if len(documents) > batch_size:
             batches = int(math.ceil(len(documents) / batch_size))
@@ -104,8 +106,8 @@ class Client(BaseClient):
                 batch_iterator = range(batches)
             for b in batch_iterator:
                 docs = documents[b * batch_size:(b + 1) * batch_size]
-                res = self._bulk(docs, model, embeddings_path, attributes)
+                res = self._bulk(docs, attributes)
                 parsed_documents.extend(res)
         else:
-            parsed_documents = self._bulk(documents, model, embeddings_path, attributes)
+            parsed_documents = self._bulk(documents, attributes)
         return [SpacyClientDocument(x) for x in parsed_documents]

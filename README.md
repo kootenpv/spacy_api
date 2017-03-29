@@ -67,15 +67,21 @@ use
 
 #### Arguments
 
+LocalClient/Client:
+
 ```python
 # language/model
-doc = spacy_client.single("How are you", model="en")
+spacy_client = Client(model="en")
 
 # Using google pretrained vectors
-doc = spacy_client.single("How are you", embeddings_path="en_google")
+spacy_client = Client(embeddings_path="en_google")
+```
 
+To make a call:
+
+```python
 # Tell spacy which attributes to give back, comma separated
-doc = spacy_client.single("How are you", attributes="text,lemma_,pos,vector")
+spacy_client.single("How are you", attributes="text,lemma_,pos,vector")
 ```
 
 Naturally, you can use any combination of these.
