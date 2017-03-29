@@ -1,7 +1,7 @@
 import sys
 
 __project__ = "spacy_api"
-__version__ = "0.4.26"
+__version__ = "0.4.27"
 __repo__ = "https://github.com/kootenpv/spacy_api"
 
 from spacy_api.client import Client

@@ -71,11 +71,6 @@ class SpacyClientDocument(list):
 
 class BaseClient():
 
-    def __init__(self, host, port, verbose):
-        self.host = host
-        self.port = port
-        self.verbose = verbose
-
     def single(self, document, model, embeddings_path, attributes):
         raise NotImplementedError
 
