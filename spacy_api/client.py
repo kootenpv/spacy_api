@@ -79,6 +79,9 @@ class BaseClient():
         self.model = model
         self.embeddings_path = embeddings_path
 
+    def __call__(self, *args, **kwargs):
+        return self.single(*args, **kwargs)
+
     def single(self, document, attributes):
         raise NotImplementedError
 
@@ -97,9 +100,6 @@ class Client(BaseClient):
 
     def _call(self, path, *args):
         return self.rpc.call(path, *args)
-
-    def __call__(self, document, attributes=None):
-        return self.single(document, attributes=None)
 
     @cachetools.func.lru_cache(maxsize=3000000)
     def single(self, document, attributes=None):
