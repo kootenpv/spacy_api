@@ -98,6 +98,9 @@ class Client(BaseClient):
     def _call(self, path, *args):
         return self.rpc.call(path, *args)
 
+    def __call__(self, document, attributes=None):
+        return self.single(document, attributes=None)
+
     @cachetools.func.lru_cache(maxsize=3000000)
     def single(self, document, attributes=None):
         sentences = self._call("single", document, self.model, self.embeddings_path, attributes)

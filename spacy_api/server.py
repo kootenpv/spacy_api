@@ -22,6 +22,9 @@ class SpacyLocalServer(BaseClient):
     def single(self, document, attributes=None):
         return single(document, self.model, self.embeddings_path, attributes, local=True)
 
+    def __call__(self, document, attributes=None):
+        return self.single(self, document, attributes)
+
     def bulk(self, documents, attributes=None):
         documents = tuple(documents)
         return bulk(documents, self.model, self.embeddings_path, attributes, local=True)
