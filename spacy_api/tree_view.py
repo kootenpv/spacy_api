@@ -6,6 +6,9 @@ class TreeView(object):
         self.text = text
         self.attrs = attrs
 
+    def __call__(self, text_or_doc):
+        self.print(text_or_doc)
+
     def __repr__(self):
         attrs = ", ".join(self._attrs)
         return '{}(text="{}", attrs="{}")'.format(self.__class__.__name__, self.text, attrs)
