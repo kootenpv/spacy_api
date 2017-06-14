@@ -3,7 +3,7 @@ from setuptools import setup
 
 MAJOR_VERSION = '0'
 MINOR_VERSION = '4'
-MICRO_VERSION = '32'
+MICRO_VERSION = '36'
 VERSION = "{}.{}.{}".format(MAJOR_VERSION, MINOR_VERSION, MICRO_VERSION)
 
 setup(name='spacy_api',
@@ -16,7 +16,7 @@ setup(name='spacy_api',
           'console_scripts': ['spacy = spacy_api.__main__:main']
       },
       install_requires=[
-          'cachetools'
+          'cachetools', 'mprpc', 'numpy'
       ],
       classifiers=[
           'Development Status :: 5 - Production/Stable',
@@ -36,11 +36,6 @@ setup(name='spacy_api',
           'Programming Language :: Python :: 3.6',
           'Topic :: Scientific/Engineering'
       ],
-      extras_require={
-          'server': ['spacy', 'mprpc'],
-          'client': ['mprpc', 'numpy'],
-          'all': ['mprpc', 'spacy', 'numpy']
-      },
       license='MIT',
       packages=find_packages(),
       zip_safe=False,

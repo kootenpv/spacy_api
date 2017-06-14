@@ -14,17 +14,11 @@ Caching happens on unique arguments.
 
 Should work with py2 and py3.
 
-Install on a machine that will run both client and server:
+Assumes you have installed `spacy`.
+
+Install:
 
     pip install spacy_api[all]
-
-Server only (spacy, mprpc):
-
-    pip install spacy_api[server]
-
-Client Only (numpy, mprpc):
-
-    pip install spacy_api[client]
 
 ### Example
 
