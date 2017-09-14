@@ -73,7 +73,7 @@ class SpacyClientDocument(list):
                 yield token
 
 
-class BaseClient():
+class BaseClient(object):
 
     def __init__(self, model, embeddings_path):
         self.model = model
