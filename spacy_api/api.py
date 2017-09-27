@@ -25,6 +25,8 @@ def json_safety(token, x):
         value = "ERROR"
     if isinstance(value, (str, int, bool)):
         return value
+    elif x == "vector":
+        return [float(x) for x in value]
     elif hasattr(value, "__iter__"):
         if x == "children":
             return [x.i for x in value]
@@ -32,8 +34,7 @@ def json_safety(token, x):
     elif isinstance(value, list):
         return value
     else:
-        # vectors
-        return [float(x) for x in value]
+        return value
 
 
 def convert_attr(attributes):
