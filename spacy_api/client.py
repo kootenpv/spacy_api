@@ -17,8 +17,7 @@ class SpacyClientToken():
     def __repr__(self):
         if "text" in self.attributes:
             return self.text
-        else:
-            return self.lemma_
+        return self.lemma_
 
 
 class SpacyClientSentence(list):
@@ -37,6 +36,10 @@ class SpacyClientSentence(list):
     @property
     def string(self):
         return "".join([x.string for x in self.tokens])
+
+    @property
+    def text(self):
+        return self.string.strip()
 
     def __getitem__(self, i):
         return self.tokens[0]
@@ -59,6 +62,10 @@ class SpacyClientDocument(list):
     @property
     def string(self):
         return "".join([x.string for x in self.sents])
+
+    @property
+    def text(self):
+        return self.string.strip()
 
     def __getitem__(self, i):
         if not self._iter:
