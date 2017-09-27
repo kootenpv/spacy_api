@@ -7,6 +7,7 @@ DEFAULT_ATTRIBUTES = ("text", "lemma_", "pos_", "tag_", "vector")
 
 
 def get_nlp(model="en", embeddings_path=None):
+    import spacy
     if embeddings_path not in nlp_objects:
         if embeddings_path is None:
             nlp_ = spacy.load(model)
