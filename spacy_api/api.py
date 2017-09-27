@@ -1,5 +1,5 @@
+from types import GeneratorType
 import cachetools.func
-import spacy
 
 nlp_objects = {}
 
@@ -25,6 +25,12 @@ def json_safety(token, x):
         value = "ERROR"
     if isinstance(value, (str, int, bool)):
         return value
+    elif hasattr(value, "__iter__"):
+        if x == "children":
+            return [x.i for x in value]
+        return list(value)
+    elif isinstance(value, list):
+        return value
     else:
         # vectors
         return [float(x) for x in value]
@@ -34,22 +40,32 @@ def convert_attr(attributes):
     if attributes is None:
         attributes = DEFAULT_ATTRIBUTES
     elif isinstance(attributes, str):
-        attributes = tuple(attributes.split(","))
+        attributes = tuple(attributes.replace(" ", "").split(","))
     return attributes
+
+
+def add_root_attribute(tokenized_sentence, sent):
+    root_index = sent.root.i
+    for token in tokenized_sentence:
+        token["root"] = root_index
 
 
 @cachetools.func.lru_cache(maxsize=3000000)
 def single(document, model="en", embeddings_path=None, attributes=None, local=False):
     attributes = convert_attr(attributes)
+    print("a1", attributes)
+    needs_root = "root" in attributes
     nlp_ = get_nlp(model, embeddings_path)
     if local:
         sentences = nlp_(document)
     else:
         sentences = []
         for sent in nlp_(document).sents:
-            sentence = [{x: json_safety(token, x) for x in attributes}
-                        for token in sent]
-            sentences.append(sentence)
+            tokenized_sentence = [{x: json_safety(token, x) for x in attributes}
+                                  for token in sent]
+            if needs_root:
+                add_root_attribute(tokenized_sentence, sent)
+            sentences.append(tokenized_sentence)
     return sentences
 
 

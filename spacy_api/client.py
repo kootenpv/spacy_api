@@ -7,12 +7,21 @@ from mprpc import RPCClient
 
 class SpacyClientToken():
 
-    def __init__(self, **kwargs):
+    def __init__(self, sentence, **kwargs):
         self.attributes = kwargs
         for k, v in kwargs.items():
-            setattr(self, k, v)
+            if k == "children":
+                self.sentence = sentence
+                setattr(self, "_children", v)
+            else:
+                setattr(self, k, v)
         if "vector" in self.attributes:
             self.vector = np.array(self.vector)
+
+    @property
+    def children(self):
+        tokens = self.sentence.tokens
+        return [tokens[x] for x in self._children]
 
     def __repr__(self):
         if "text" in self.attributes:
@@ -23,7 +32,7 @@ class SpacyClientToken():
 class SpacyClientSentence(list):
 
     def __init__(self, tokens):
-        self.tokens = [SpacyClientToken(**token) for token in tokens]
+        self.tokens = [SpacyClientToken(self, **token) for token in tokens]
         super(SpacyClientSentence, self).__init__(self.tokens)
         self._vector = None
 
@@ -39,10 +48,14 @@ class SpacyClientSentence(list):
 
     @property
     def text(self):
-        return self.string.strip()
+        return self.string
+
+    @property
+    def root(self):
+        return self.tokens[self.tokens[0].root]
 
     def __getitem__(self, i):
-        return self.tokens[0]
+        return self.tokens[i]
 
 
 class SpacyClientDocument(list):
@@ -65,7 +78,7 @@ class SpacyClientDocument(list):
 
     @property
     def text(self):
-        return self.string.strip()
+        return self.string
 
     def __getitem__(self, i):
         if not self._iter:
@@ -98,25 +111,29 @@ class BaseClient(object):
 
 class Client(BaseClient):
 
-    def __init__(self, host="127.0.0.1", port=9033, model="en", embeddings_path=None, verbose=False):
+    def __init__(self, host="127.0.0.1", port=9033, model="en", embeddings_path=None, verbose=False, attributes=None):
         super(Client, self).__init__(model, embeddings_path)
         self.host = host
         self.port = port
         self.rpc = RPCClient(host, port)
         self.verbose = verbose
+        self.attributes = attributes
 
     def _call(self, path, *args):
         return self.rpc.call(path, *args)
 
     @cachetools.func.lru_cache(maxsize=3000000)
     def single(self, document, attributes=None):
+        attributes = attributes or self.attributes
         sentences = self._call("single", document, self.model, self.embeddings_path, attributes)
         return SpacyClientDocument(sentences)
 
     def _bulk(self, documents, attributes):
+        attributes = attributes or self.attributes
         return self._call("bulk", documents, self.model, self.embeddings_path, attributes)
 
     def bulk(self, documents, batch_size=1000, attributes=None):
+        attributes = attributes or self.attributes
         parsed_documents = []
         if len(documents) > batch_size:
             batches = int(math.ceil(len(documents) / batch_size))

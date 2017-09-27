@@ -5,6 +5,7 @@ class TreeView(object):
         self.nlp = nlp
         self.text = text
         self.attrs = attrs
+        self.nlp.attributes = self.client_attrs
 
     def __call__(self, text_or_doc):
         self.print(text_or_doc)
@@ -12,6 +13,12 @@ class TreeView(object):
     def __repr__(self):
         attrs = ", ".join(self._attrs)
         return '{}(text="{}", attrs="{}")'.format(self.__class__.__name__, self.text, attrs)
+
+    @property
+    def client_attrs(self):
+        attrs = set(["text", "string", "children", "root"])
+        attrs.update(self._attrs)
+        return list(attrs)
 
     @property
     def _attrs(self):
@@ -22,7 +29,8 @@ class TreeView(object):
     def node_format(self, node, level):
         tmpl_args = "(" + ",\t".join(["{}"] * len(self._attrs)) + ")"
         tmpl = "\n{} {}\t" + tmpl_args
-        return tmpl.format("----" * level, *[getattr(node, x) for x in [self.text] + self._attrs])
+        displayed = [self.text] + self._attrs
+        return tmpl.format("----" * level, *[getattr(node, x) for x in displayed])
 
     def dump_tree(self, tree, level=0):
         children = list(tree.children)
@@ -35,7 +43,7 @@ class TreeView(object):
         doc = self.nlp(text_or_doc) if isinstance(text_or_doc, str) else text_or_doc
         for sentence in doc.sents:
             txt = sentence.text
-            yield next(self.nlp(txt[0].upper() + txt[1:]).sents)
+            yield next(iter(self.nlp(txt[0].upper() + txt[1:]).sents))
 
     def get_first(self, text):
         return next(self.get_sentences(text)).root
