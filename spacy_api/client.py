@@ -1,5 +1,5 @@
 import tqdm
-import cachetools.func
+from cachetools import LRUCache
 import math
 import numpy as np
 from mprpc import RPCClient
@@ -118,22 +118,47 @@ class Client(BaseClient):
         self.rpc = RPCClient(host, port)
         self.verbose = verbose
         self.attributes = attributes
+        self.cache = LRUCache(maxsize=3000000)
 
     def _call(self, path, *args):
         return self.rpc.call(path, *args)
 
-    @cachetools.func.lru_cache(maxsize=3000000)
+    def most_similar(self, word, n=10):
+        key = (word, n, self.model, self.embeddings_path)
+        if key not in self.cache:
+            result = self._call("most_similar", word, n, self.model, self.embeddings_path)
+            self.cache[key] = result
+        return self.cache[key]
+
     def single(self, document, attributes=None):
-        attributes = attributes or self.attributes
-        sentences = self._call("single", document, self.model, self.embeddings_path, attributes)
-        return SpacyClientDocument(sentences)
+        attributes = attributes or tuple(self.attributes)
+        key = (document, attributes, self.model, self.embeddings_path)
+
+        if key not in self.cache:
+            sentences = self._call("single", document, self.model,
+                                   self.embeddings_path, attributes)
+            result = SpacyClientDocument(sentences)
+            self.cache[key] = result
+            return result
+
+        return self.cache[key]
 
     def _bulk(self, documents, attributes):
-        attributes = attributes or self.attributes
-        return self._call("bulk", documents, self.model, self.embeddings_path, attributes)
+        attributes = attributes or tuple(self.attributes)
+        done_docs = [(num, self.cache[(document, attributes)]) for num, document in enumerate(documents)
+                     if (document, attributes) in self.cache]
+        todo_docs = [(num, document) for num, document in enumerate(documents)
+                     if (document, attributes) not in self.cache]
+        todo_inds = [x[0] for x in todo_docs]
+        todo_docs = [x[1] for x in todo_docs]
+        if todo_docs:
+            print(todo_docs)
+            todo_docs = self._call("bulk", todo_docs, self.model, self.embeddings_path, attributes)
+        todo_docs = [(x, SpacyClientDocument(y)) for x, y in zip(todo_inds, todo_docs)]
+        return [x[1] for x in sorted(todo_docs + done_docs)]
 
     def bulk(self, documents, batch_size=1000, attributes=None):
-        attributes = attributes or self.attributes
+        attributes = attributes or tuple(self.attributes)
         parsed_documents = []
         if len(documents) > batch_size:
             batches = int(math.ceil(len(documents) / batch_size))
@@ -148,4 +173,4 @@ class Client(BaseClient):
                 parsed_documents.extend(res)
         else:
             parsed_documents = self._bulk(documents, attributes)
-        return [SpacyClientDocument(x) for x in parsed_documents]
+        return parsed_documents

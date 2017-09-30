@@ -12,7 +12,11 @@ def get_nlp(model="en", embeddings_path=None):
         if embeddings_path is None:
             nlp_ = spacy.load(model)
         else:
-            nlp_ = spacy.load(model, vectors=embeddings_path)
+            if embeddings_path.endswith(".bin"):
+                nlp_ = spacy.load(model, vectors=False)
+                nlp_.vocab.load_vectors_from_bin_loc(embeddings_path)
+            else:
+                nlp_ = spacy.load(model, vectors=embeddings_path)
         nlp_objects[embeddings_path] = nlp_
     return nlp_objects[embeddings_path]
 
@@ -54,7 +58,6 @@ def add_root_attribute(tokenized_sentence, sent):
 @cachetools.func.lru_cache(maxsize=3000000)
 def single(document, model="en", embeddings_path=None, attributes=None, local=False):
     attributes = convert_attr(attributes)
-    print("a1", attributes)
     needs_root = "root" in attributes
     nlp_ = get_nlp(model, embeddings_path)
     if local:
@@ -75,3 +78,12 @@ def bulk(documents, model="en", embeddings_path=None, attributes=None, local=Fal
     parsed_documents = [single(d, model, embeddings_path, attributes, local)
                         for d in documents]
     return parsed_documents
+
+
+@cachetools.func.lru_cache(maxsize=3000000)
+def most_similar(word, n, model, embeddings_path):
+    nlp_ = get_nlp(model, embeddings_path)
+    word = nlp_(word)[0]
+    queries = [w for w in word.vocab if w.is_lower == word.is_lower and w.prob >= -15]
+    by_similarity = sorted(queries, key=word.similarity, reverse=True)
+    return [x.orth_ for x in by_similarity[:n]]

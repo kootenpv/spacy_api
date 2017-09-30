@@ -1,6 +1,6 @@
 from gevent.server import StreamServer
 from mprpc import RPCServer
-from spacy_api.api import single, bulk
+from spacy_api.api import single, bulk, most_similar
 from spacy_api.client import BaseClient
 
 
@@ -13,11 +13,11 @@ class SpacyServer(RPCServer):
         documents = tuple(documents)
         return bulk(documents, model, embeddings_path, attributes)
 
+    def most_similar(self, word, n, model, embeddings_path):
+        return most_similar(word, n, model, embeddings_path)
+
 
 class SpacyLocalServer(BaseClient):
-
-    def __init__(self, model, embeddings_path):
-        super(SpacyLocalServer, self).__init__(model, embeddings_path)
 
     def single(self, document, attributes=None):
         return single(document, self.model, self.embeddings_path, attributes, local=True)
@@ -25,6 +25,9 @@ class SpacyLocalServer(BaseClient):
     def bulk(self, documents, attributes=None):
         documents = tuple(documents)
         return bulk(documents, self.model, self.embeddings_path, attributes, local=True)
+
+    def most_similar(self, word, n):
+        return most_similar(word, n, self.model, self.embeddings_path)
 
 
 def serve(host="127.0.0.1", port=9033):
