@@ -1,5 +1,6 @@
 from types import GeneratorType
 import cachetools.func
+import os
 
 nlp_objects = {}
 
@@ -15,6 +16,12 @@ def get_nlp(model="en", embeddings_path=None):
             if embeddings_path.endswith(".bin"):
                 nlp_ = spacy.load(model, vectors=False)
                 nlp_.vocab.load_vectors_from_bin_loc(embeddings_path)
+            elif os.path.isdir(embeddings_path):
+                from spacy.vectors import Vectors
+                vectors = Vectors()
+                vectors = vectors.from_disk(embeddings_path)
+                nlp_ = spacy.load(model, vectors=False)
+                nlp_.vocab.vectors = vectors
             else:
                 nlp_ = spacy.load(model, vectors=embeddings_path)
         nlp_objects[embeddings_path] = nlp_
