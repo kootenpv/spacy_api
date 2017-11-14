@@ -152,7 +152,6 @@ class Client(BaseClient):
         todo_inds = [x[0] for x in todo_docs]
         todo_docs = [x[1] for x in todo_docs]
         if todo_docs:
-            print(todo_docs)
             todo_docs = self._call("bulk", todo_docs, self.model, self.embeddings_path, attributes)
         todo_docs = [(x, SpacyClientDocument(y)) for x, y in zip(todo_inds, todo_docs)]
         return [x[1] for x in sorted(todo_docs + done_docs)]
