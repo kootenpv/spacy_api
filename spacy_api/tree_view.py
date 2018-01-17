@@ -16,8 +16,9 @@ class TreeView(object):
 
     @property
     def client_attrs(self):
-        attrs = set()
-        attrs.update(self.nlp.attributes or [])
+        attrs = self.nlp.attributes if hasattr(self.nlp, "attributes") else []
+        attrs = attrs or []
+        attrs = set(attrs)
         attrs.update(["text", "string", "children", "root"])
         attrs.update(self._attrs)
         return list(attrs)
